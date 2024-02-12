@@ -9,8 +9,8 @@
                     <label for="role" class="form-label text-primary">Select Role:</label>
                     <br>
                     <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-secondary" onclick="showForm('user')"><img src="{{asset('img/user.png')}}" class="w-25"><br>User</button>
-                        <button type="button" class="btn btn-secondary" onclick="showForm('courier')"><img src="{{asset('img/courier.png')}}" class="w-25"><br>Courier</button>
+                        <button type="button" class="btn btn-secondary" onclick="showForm('user')"><img src="{{asset('img/user.png')}}" class="w-75"><br>User</button>
+                        <button type="button" class="btn btn-secondary" onclick="showForm('courier')"><img src="{{asset('img/courier.png')}}" class="w-75"><br>Courier</button>
                     </div>
                 </div>
             </div>

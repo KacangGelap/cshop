@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class items_on_cart extends Model
 {
     use HasFactory;
+    protected $table = 'items_on_cart';
 }

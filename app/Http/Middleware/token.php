@@ -15,6 +15,6 @@ class token
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $request->input('token') == 'in1C0ntoh4p1T0k3n' ? $next($request) : null;
+        return $request->input('token') == 'in1C0ntoh4p1T0k3n' ? $next($request) : response()->json(['error' => 'Forbidden'], 403);
     }
 }
