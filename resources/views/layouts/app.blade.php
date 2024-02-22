@@ -15,7 +15,7 @@
 
     <!-- Scripts -->
     <link rel="stylesheet" href="{{asset('css/bootstrap.css')}}">
-    <script src="{{asset('js/bootstrap.js')}}"></script>
+    <script src="{{asset('js/bootstrap.bundle.js')}}"></script>
 </head>
 <body>
     <div id="app">

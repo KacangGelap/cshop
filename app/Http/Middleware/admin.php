@@ -16,7 +16,7 @@ class admin
     public function handle(Request $request, Closure $next): Response
     {
         
-        return Auth::user()->role == 'admin' ? $next($request) : route('home');
+        return Auth::user()->role == 'admin' ? $next($request) : redirect('home');
         
     }
 }

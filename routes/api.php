@@ -44,5 +44,15 @@ Route::middleware(['token'])->group(function () {
 
         return response()->json(['message'=>'User has been added'], 200, [], JSON_PRETTY_PRINT);
     });
+
+    Route::delete('/get/privilege/admin/remove/{id}',function(Request $request, $id) {
+        try {
+            $user = User::findOrFail($id);
+            $user->delete();
+        } catch (\Throwable $th) {
+            return response()->json(['message'=>'an error occured'], 500, [], JSON_PRETTY_PRINT);
+        }
+        return response()->json(['message'=>'User has been removed'], 200, [], JSON_PRETTY_PRINT);
+    });
 });
 

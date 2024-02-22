@@ -16,11 +16,10 @@ class isolation
     public function handle(Request $request, Closure $next): Response
     {
         if (Null != $request->route('id')) {
-            
             if(Auth::user()->id == $request->route('id') || Auth::user()->role == 'admin'){
                 return $next($request);
             }else{
-                return redirect('home')->withstatus('Access Denied');
+                return redirect('home')->withstatus('Access Denied by isolation');
             } 
         }
         else{

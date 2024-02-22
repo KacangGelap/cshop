@@ -12,7 +12,7 @@ class paymentController extends Controller
         $data = billing::all();
         return view('payment.index')->withuser($user)->withdata($data);
     }
-    public function detail(){
-        return view('payment.detail');
+    public function billing(){
+        return view('payment.billing');
     }
 }
