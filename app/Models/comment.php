@@ -20,4 +20,7 @@ class comment extends Model
         'media3'
     ];
 
+    public function user(){
+        return $this->belongsTo('App\Models\User');
+    }
 }

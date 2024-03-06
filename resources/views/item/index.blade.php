@@ -38,10 +38,10 @@
                 <tbody class="bg-secondary">
                 @foreach($items as $item)
                 <tr>
-                    <td>{{$item->item->item_name}}</td>
-                    <td>Rp. {{number_format($item->item->item_price, 0, ',', '.')}}</td>
+                    <td>{{$item->item_name}}</td>
+                    <td>Rp. {{number_format($item->item_price, 0, ',', '.')}}</td>
                     <td>{{$item->item_count}}</td>
-                    <td>{{$item->item->status}}</td>
+                    <td>{{$item->status}}</td>
                     <td>{{$item->user->name}}</td>
                     <td class="d-flex justify-content-around">
                         <a class="btn btn-outline-info" href="{{url('user/'.$item->id)}}">{{__('Show')}}</a>

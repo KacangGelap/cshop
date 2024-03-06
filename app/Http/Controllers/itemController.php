@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\items;
-// use App\Models\items_on_stall;
+use App\Models\category;
 use App\Models\items_on_cart;
 use App\Models\comment;
 use Auth;
@@ -23,8 +23,8 @@ class itemController extends Controller
     }   
 
     public function create_stall(){
-
-        return view('item.create');
+        $category = category::all();
+        return view('item.create')->with('category',$category);
     }
     
     public function store_stall(Request $request){
@@ -40,12 +40,14 @@ class itemController extends Controller
         try {
             $item = new items();
             $item->item_name = $request->input('item_name');
+            $item->category_id = $request->input('category_id');
             $item->item_price = $request->input('item_price');
             $item->item_description = $request->input('item_description');
             $item->user_id = Auth::user()->id;
             $item->item_count = $request->input('item_count');
             //jika count > 0 atau tidak null, maka set tersedia
-            if (NULL != $request->input('item_count') || $request->input('item_count') > 0){
+            // dd( $request->input('item_count') > 0);
+            if ($request->input('item_count') > 0){
                 $item->status = 'Tersedia';
             }else{
                 $item->status = 'Habis';
@@ -65,8 +67,9 @@ class itemController extends Controller
 
     public function edit_stall($id, $item){
         $user = User::findOrFail($id);
+        $category = category::all();
         $items = items::findOrFail($item);
-        return view('item.edit')->with('user',$user)->with('items',$items);
+        return view('item.edit')->with('user',$user)->with('items',$items)->with('category',$category);
     }
 
     public function update_stall(Request $request, $id, $item){
@@ -83,6 +86,7 @@ class itemController extends Controller
             $update = items::findOrFail($item);
             $update->update([
                 'item_name' => $request->input('item_name'),
+                'category_id' => $request->input('category_id'),
                 'item_price' => $request->input('item_price'),
                 'item_description' => $request->input('item_description'),
                 'item_count' => $request->input('item_count'),
@@ -130,7 +134,36 @@ class itemController extends Controller
         $current_items = items_on_cart::where('user_id',$user->id)->get();
         return view('item.cart')->withuser($user)->with('current_items',$current_items)->with('items',$items);
     }
-    
+    public function addCart(Request $request, $item){
+        $request->validate([
+            'count' => 'required|numeric',
+        ]);
+        try {
+            $current = items::findOrFail($item);
 
+            $cart = new cart();
+            $cart->user_id = Auth::user()->id;
+            $cart->item_id = $current->id;
+            $cart->item_count = $request->input('count');
+            $cart->save();
+        } catch (\Throwable $th) {
+            return redirect('/')->withstatus('Terjadi Kesalahan');
+        }
+        return redirect('/cart/'.Auth::user()->id)->withstatus('Berhasil ditambah');
+    }
+    public function detail($item){
+        $items = items::findOrFail($item);
+        $comments = comment::where('item_id',$item)->get();
+        return view('item.detail')->with('item',$items)->withcomments($comments);
+    }
+    public function checkout(Request $request, $item){
+
+    }
+    public function category($cat){
+        $category = category::all();
+        $item = items::where('category_id',$cat)->get();
+        
+        return view('item.category')->with('item',$item)->with('category',$category);
+    }
 
 }

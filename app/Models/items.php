@@ -11,6 +11,7 @@ class items extends Model
     protected $table = 'items';
     protected $fillable = [
         'item_name',
+        'category_id',
         'item_price',
         'item_description',
         'user_id',
@@ -19,6 +20,12 @@ class items extends Model
         'foto1',
         'foto2'
     ];
+    public function user(){
+        return $this->belongsTo('App\Models\User');
+    }
+    public function category(){
+        return $this->belongsTo('App\Models\category');
+    }
     public function comment(){
         return $this->hasMany('App\Models\comment');
     }

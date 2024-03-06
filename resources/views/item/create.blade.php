@@ -24,12 +24,29 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="row mb-3">
+                            <label for="category_id" class="col-md-4 col-form-label text-md-end">{{ __('Kategori') }}</label>
 
+                            <div class="d-flex col-md-6">
+                                <select name="category_id" id="category_id" class="form-control">
+                                    <option value="{{NULL}}">Pilih Kategori</option>
+                                    @foreach ($category as $c)
+                                    <option value="{{$c->id}}">{{$c->categories}}</option>
+                                    @endforeach
+                                </select>
+
+                                @error('category_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <label for="item_price" class="col-md-4 col-form-label text-md-end">{{ __('Harga Barang') }}</label>
 
                             <div class="d-flex col-md-6">
-                                <button class="btn btn-light" disabled>Rp.</button><input id="item_price" type="number" class="form-control @error('item_price') is-invalid @enderror" name="item_price" value="{{NULL != old('item_price') ? old('item_price') : 0}}" required autocomplete="item_price" autofocus>
+                                <button class="btn btn-light rounded-0 rounded-start" disabled>Rp.</button><input id="item_price" type="number" class="rounded-0 rounded-end form-control @error('item_price') is-invalid @enderror" name="item_price" value="{{NULL != old('item_price') ? old('item_price') : 0}}" required autocomplete="item_price" autofocus>
 
                                 @error('item_price')
                                     <span class="invalid-feedback" role="alert">

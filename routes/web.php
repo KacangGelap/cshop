@@ -15,7 +15,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::user()) {
-        return view('home');
+        $item = App\Models\items::all();
+        $category = App\Models\category::all();
+        $cart = App\Models\items_on_cart::where('user_id',Auth::user()->id)->get();
+        return view('home')->with('cart',$cart)->with('item',$item)->with('category',$category);
     } else {
         return view('welcome');
     }
@@ -74,4 +77,8 @@ Route::middleware(['auth','checking'])->group(function () {
     Route::get('/cart/{id}',[App\Http\Controllers\itemController::class,'cart'])->name('Keranjang Anda');
     Route::get('/checkout/{id}/{item}',[App\Http\Controllers\paymentontroller::class,'checkout'])->name('checkout Barang');
     Route::post('/checkout/{id}/{item}',[App\Http\Controllers\paymentController::class,'confirm_checkout']);
+            //Detail item
+    Route::get('/item/{item}',[App\Http\Controllers\itemController::class,'detail'])->name('Detail Item');
+            //Categories
+    Route::get('category/{cat}',[App\Http\COntrollers\itemcontroller::class,'category'])->name('Kategori');
 });

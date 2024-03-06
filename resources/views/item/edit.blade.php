@@ -27,6 +27,25 @@
                         </div>
 
                         <div class="row mb-3">
+                            <label for="category_id" class="col-md-4 col-form-label text-md-end">{{ __('Kategori') }}</label>
+
+                            <div class="d-flex col-md-6">
+                                <select name="category_id" id="category_id" class="form-control">
+                                    <option value="{{NULL}}">Pilih Kategori</option>
+                                    @foreach ($category as $c)
+                                    <option value="{{$c->id}}">{{$c->categories}}</option>
+                                    @endforeach
+                                </select>
+
+                                @error('category_id')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
                             <label for="item_price" class="col-md-4 col-form-label text-md-end">{{ __('Harga Barang') }}</label>
 
                             <div class="d-flex col-md-6">

@@ -13,6 +13,12 @@ return new class extends Migration
     {
         Schema::create('item_history', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained(
+                table: 'users', indexName: 'user_id'
+            );
+            $table->foreignId('item_id')->constrained(
+                table: 'shipped_item', indexName: 'item_id'
+            );
             $table->timestamps();
         });
     }

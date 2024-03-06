@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-<footer class="mt-auto py-3 text-bg-dark shadow-lg" style="position:absolute;width:100%;">
+<footer class="py-3 text-bg-dark shadow-lg" style="position:absolute;width:100%;">
     <div class="mx-auto row">
         <div class="col-md-3">
             <h6><img src="{{asset('img/favicon.png')}}" style="width:10%">{{config('app.name')}}</h6>

@@ -21,6 +21,7 @@ Route::middleware(['token'])->group(function () {
 
     Route::get('/user', function (Request $request){
         $user = User::all();
+        // dd(Auth::guest());
         return response()->json(['data'=>$user], 200, [], JSON_PRETTY_PRINT);
     });
 

@@ -26,12 +26,12 @@
           <div class="container-fluid">
             <div class="row flex-nowrap">
                 <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark ">
-                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100  min-vh-100 ">
                         <a href="/" class="row d-flex justify-content-center mb-md-0 mx-auto text-primary text-decoration-none border-bottom">
-                            <div>
+                            
                             <img src="{{asset('img/favicon.png')}}" class="w-100 justify-content-center">
                             <p class="text-center">{{config('app.name')}}</p>
-                            </div>
+                            
                         </a>
                         <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                             <li class="nav-item">
@@ -79,7 +79,7 @@
                         
                         <div class="dropdown pb-4">
                             <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="{{Auth::user()->photo != NULL ? Auth::user()->photo : 'https://github.com/kacanggelap.png'}}" alt="hugenerd" width="30" height="30" class="rounded-circle">
+                                <img src="{{Auth::user()->photo != NULL ? Auth::user()->photo : 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpluspng.com%2Fimg-png%2Fpng-user-icon-person-icon-png-people-person-user-icon-2240.png&f=1&nofb=1&ipt=31f2d6611ddc01a7ccc8ba193c5630d2bd1ab24b2d5cec443e962b46e01e5485&ipo=images'}}" alt="hugenerd" width="30" height="30" class="rounded-circle">
                                 <span class="d-none d-sm-inline mx-1">{{Str::limit(Auth::user()->name, 13)}}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
@@ -103,7 +103,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col py-3">
+                <div class="col pt-3">
                     @yield('content')
                 </div>
             </div>
