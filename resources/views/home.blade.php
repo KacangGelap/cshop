@@ -20,7 +20,7 @@
 
                         <span class="alert alert-primary mx-2 position-relative col-3">
                             <a href="{{url('/user/'.Auth::user()->id.'/wallet')}}" class="nav-link">
-                                <i class="fs-3 bi-box"></i><p>{{Auth::user()->ewallet}}<br>CubeCoins</p>
+                                <i class="fs-3 bi-box"></i><p>{{number_format(Auth::user()->ewallet, 0, ',', '.')}}<br>CubeCoins</p>
                             </a>
                             @if (Auth::user()->ewallet < 10000)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">&nbsp;</span>@endif
                         </span>
@@ -75,7 +75,19 @@
                     @endforeach
                 </div>
             </div>
+            @elseif(Auth::user()->role == 'admin')
+            <div class="card text-bg-dark">
+                <div class="card-header">
+                    {{__('Welcome '.Auth::user()->name.'!')}}
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                            {{__('Contoh blablabla')}} &nbsp;<a href="">blablabla</a>
+                    </div>
+                </div>
+            </div>
             @endif
+
     </div>
 </div>
 @endsection

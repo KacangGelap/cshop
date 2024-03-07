@@ -84,8 +84,8 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
                                 <li class="d-flex justify-content-around">
-                                     Wallet : {{__(Auth::user()->ewallet)}}
-                                    <a class="text-bg-primary px-1" href="{{url('user/'.Auth::user()->id.'/wallet')}}"><i class="bi bi-plus"></i></a>
+                                    Wallet: {{ Auth::user()->ewallet >= 1000 ? number_format(Auth::user()->ewallet / 1000, 0) . 'k' : Auth::user()->ewallet }}
+                                    <a class="text-dark bg-primary px-1" href="{{url('user/'.Auth::user()->id.'/wallet')}}"><i class="bi bi-plus"></i></a>
                                 </li>
                                 <li><a class="dropdown-item" href="{{url('profile/'.Auth::user()->id)}}">Profile</a></li>
                                 <li>

@@ -9,7 +9,7 @@
                 @foreach($data as $item)
                   
                     <div class="card col-3 border-4 border-dark py-0">
-                        <a href="{{url('/user/'.Auth::user()->id.'/wallet/'.$item->id)}}" class="nav-link">
+                        <a href="{{url('/billing/'.$item->id)}}" class="nav-link">
                         <div class="card-header" style="background-image: url({{$item->image}});height:200px;background-size:cover;background-position:center">
                         </div>
                         <div class="card-body">

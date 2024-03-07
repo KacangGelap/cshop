@@ -42,7 +42,7 @@
                     <td>{{$user->email}}</td>
                     <td>{{$user->role}}</td>
                     <td class="d-flex justify-content-around">
-                        <a class="btn btn-outline-info" href="{{url('user/'.$user->id)}}">{{__('Show')}}</a>
+                        <a class="btn btn-outline-info" href="{{url('profile/'.$user->id)}}">{{__('Show')}}</a>
                         <a class="btn btn-outline-warning" href="{{url('user/edit/'.$user->id)}}">{{__('Edit')}}</a>
                         <form class="d-flex" action="{{url('/user/delete/'.$user->id)}}" method="POST"><input type="hidden" name="_method" value="DELETE">
                             @csrf

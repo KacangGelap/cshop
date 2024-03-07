@@ -135,25 +135,24 @@ class itemController extends Controller
         return view('item.cart')->withuser($user)->with('current_items',$current_items)->with('items',$items);
     }
     public function addCart(Request $request, $item){
+        $current = items::findOrFail($item);
         $request->validate([
-            'count' => 'required|numeric',
+            'item_count' => 'required|numeric|max:'.$current->item_count,
         ]);
         try {
-            $current = items::findOrFail($item);
-
-            $cart = new cart();
+            $cart = new items_on_cart();
             $cart->user_id = Auth::user()->id;
             $cart->item_id = $current->id;
-            $cart->item_count = $request->input('count');
+            $cart->item_count = $request->input('item_count');
             $cart->save();
         } catch (\Throwable $th) {
-            return redirect('/')->withstatus('Terjadi Kesalahan');
+            return redirect('/')->withstatus('Galat saat menambahkan item, item mungkin sudah ada di keranjang');
         }
-        return redirect('/cart/'.Auth::user()->id)->withstatus('Berhasil ditambah');
+        return redirect('/item/'.$current->id)->withstatus('Berhasil ditambah');
     }
     public function detail($item){
         $items = items::findOrFail($item);
-        $comments = comment::where('item_id',$item)->get();
+        $comments = comment::where('item_id',$item)->first();
         return view('item.detail')->with('item',$items)->withcomments($comments);
     }
     public function checkout(Request $request, $item){

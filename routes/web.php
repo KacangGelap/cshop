@@ -56,8 +56,8 @@ Route::middleware(['auth','checking'])->group(function () {
     
         //wallet payment
     Route::get('/user/{id}/wallet',[App\Http\Controllers\paymentController::class,'wallet'])->name('Buy Wallet');
-    Route::get('/user/{id}/wallet/{wallet}',[App\Http\Coontrollers\paymentController::class,'billing'])->name('Buy Cubecoins');
-
+    Route::get('/billing/{bil}',[App\Http\Controllers\paymentController::class,'billing'])->name('Buy Cubecoins');
+    Route::post('/billing/{bil}',[App\Http\Controllers\paymentController::class,'payment']);
     //Item Management
         //Admin
     Route::middleware(['admin'])->group(function(){
@@ -75,7 +75,8 @@ Route::middleware(['auth','checking'])->group(function () {
     
             //Keranjang & Checkout
     Route::get('/cart/{id}',[App\Http\Controllers\itemController::class,'cart'])->name('Keranjang Anda');
-    Route::get('/checkout/{id}/{item}',[App\Http\Controllers\paymentontroller::class,'checkout'])->name('checkout Barang');
+    Route::post('/add/{item}',[App\Http\Controllers\itemController::class,'addCart']);
+    Route::get('/checkout/{id}/{item}',[App\Http\Controllers\paymentController::class,'checkout'])->name('checkout Barang');
     Route::post('/checkout/{id}/{item}',[App\Http\Controllers\paymentController::class,'confirm_checkout']);
             //Detail item
     Route::get('/item/{item}',[App\Http\Controllers\itemController::class,'detail'])->name('Detail Item');
