@@ -4,16 +4,20 @@
 {{-- <meta http-equiv="refresh" content="5"> --}}
 <div class="container-fluid">
     <div class="row justify-content-center">
-       
+            @if (session('sukses'))
+                <div class="alert alert-success" role="alert">
+                    {{ session('sukses') }}
+                </div>
+            @endif
             @if (session('status'))
-                        <div class="alert alert-danger" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+                <div class="alert alert-danger" role="alert">
+                    {{ session('status') }}
+                </div>
+            @endif
             @if(Auth::user()->role == 'user')
             <div class="card text-bg-dark">
                 <div class="card-header"> </div>
-                <div clas="card-body justify-content-center">
+                <div class="card-body justify-content-center">
                     @if($cart->count() > 0)<div class="alert alert-warning text-center">anda mempunyai barang di keranjang.<a href="{{url('/cart/'.Auth::user()->id)}}">Lihat Disini</a></div>@endif
                     {{-- 3 panel --}}
                     <div class="row justify-content-center text-center alert bg-secondary mx-auto">
@@ -33,8 +37,8 @@
                             @if ($cart->count() > 0)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">&nbsp;</span>@endif
                         </span>
                         <span class="alert alert-primary mx-2 position-relative col-3">
-                            <a href="{{url('/stall/'.Auth::user()->id)}}" class="nav-link">
-                                <i class="fs-3 bi-shop"></i><p>{{$item->where('user_id',Auth::user()->id)->count()}}<br>Items on stall</p>
+                            <a href="{{url('shipment/'.Auth::user()->id)}}" class="nav-link">
+                                <i class="fs-3 bi-truck"></i><p>{{$ship->where('user_id',Auth::user()->id)->count()}}<br>Your Orders</p>
                             </a>
                         </span>
                         <hr>

@@ -15,10 +15,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (Auth::user()) {
+        $ship = App\Models\shipped_item::all();
         $item = App\Models\items::all();
         $category = App\Models\category::all();
         $cart = App\Models\items_on_cart::where('user_id',Auth::user()->id)->get();
-        return view('home')->with('cart',$cart)->with('item',$item)->with('category',$category);
+        return view('home')->with('cart',$cart)->with('item',$item)->with('category',$category)->with('ship',$ship);
     } else {
         return view('welcome');
     }
@@ -72,14 +73,22 @@ Route::middleware(['auth','checking'])->group(function () {
     Route::get('stall/{id}/edit/{item}',[App\Http\Controllers\itemController::class,'edit_stall'])->name('Edit Barang Anda');
     Route::put('stall/{id}/edit/{item}',[App\Http\Controllers\itemController::class,'update_stall']);
     Route::delete('stall/{id}/item/delete/{item}',[App\Http\Controllers\itemController::class,'destroy']);
-    
-            //Keranjang & Checkout
-    Route::get('/cart/{id}',[App\Http\Controllers\itemController::class,'cart'])->name('Keranjang Anda');
-    Route::post('/add/{item}',[App\Http\Controllers\itemController::class,'addCart']);
-    Route::get('/checkout/{id}/{item}',[App\Http\Controllers\paymentController::class,'checkout'])->name('checkout Barang');
-    Route::post('/checkout/{id}/{item}',[App\Http\Controllers\paymentController::class,'confirm_checkout']);
-            //Detail item
+    //Detail item
     Route::get('/item/{item}',[App\Http\Controllers\itemController::class,'detail'])->name('Detail Item');
-            //Categories
-    Route::get('category/{cat}',[App\Http\COntrollers\itemcontroller::class,'category'])->name('Kategori');
+    //Keranjang & Checkout
+    Route::get('/cart/{id}',[App\Http\Controllers\itemController::class,'cart'])->name('Keranjang Anda');
+    Route::middleware(['buyer'])->group(function(){
+        
+        Route::post('/add/{item}',[App\Http\Controllers\itemController::class,'addCart']);
+        Route::delete('/delete/{cart}',[App\Http\Controllers\itemController::class,'cart_delete']);
+        Route::get('/checkout/{id}/{cart}',[App\Http\Controllers\paymentController::class,'checkout'])->name('checkout Barang');
+        Route::post('/checkout/{id}/{cart}',[App\Http\Controllers\paymentController::class,'confirm_checkout']);
+        
+    });
+    //Categories
+    Route::get('category/{cat}',[App\Http\Controllers\itemcontroller::class,'category'])->name('Kategori');
+    //Shipment & change status
+    Route::get('shipment/{id}',[App\Http\Controllers\itemcontroller::class,'shipment'])->name('Pesanan kamu');
+    Route::get('pending/{id}',[App\Http\Controllers\itemcontroller::class,'pending'])->name('Menunggu Konfirmasi');
+    Route::post('pending/{id}',[App\Http\Controllers\itemcontroller::class,'accept_shipment'])->name('Menunggu Konfirmasi');
 });

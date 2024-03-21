@@ -1,30 +1,45 @@
 @extends('layouts.main')
 @section('content')
-<style>
-    .landscape {
-    aspect-ratio: 16 / 9;
-}
-</style>
+
+    @if (session('sukses'))
+        <div class="alert alert-success text-success" role="alert" >
+            {{ session('sukses') }}
+        </div>
+    @elseif (session('gagal'))
+        <div class="alert alert-danger" role="alert" >
+            {{ session('gagal') }}
+        </div>
+        
+    @endif
+    @error('item_count')
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ $message }}</strong>
+        </div>
+    @enderror
     <div class="container-fluid text-bg-dark">
+        
         <div class="row py-3">
-            <span class="col-4"><img src="{{$item->foto1}}" class="w-100"></span>
+            <span class="col-4"><img src="{{$item->foto1}}" class="w-100" loading="lazy"></span>
             <span class="col-4">
                 <h2>{{$item->item_name}}</h2>
                 <pre class="text-info">{{$item->category->categories}}</pre>
                 <h1>Rp. {{number_format($item->item_price, 0, ',', '.')}}</h1>
                 <div class="d-flex">
+                @if(NULL != $comments)
                 @for ($i = 0; $i < $comments->avg('rating'); $i++)
                     <i class="bi bi-star-fill text-warning"></i>
                 @endfor
+                
                 <p>({{$comments->count()}} komentar)</p>
+                @endif
                 </div>
                 <!-- Button to Open the Modal -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
-                    Tambahkan ke Keranjang
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal" @if(Auth::user()->id == $item->user->id || $item->item_count < 1) disabled @endif>
+                    @if(Auth::user()->id == $item->user->id) Ini barang milik anda @elseif($item->item_count < 1) Barang Habis @else Tambahkan ke Keranjang @endif
                 </button>
                 
                 <!-- The Modal -->
-                <div class="modal" id="myModal">
+                <div class="modal" id="myModal" loading="lazy">
                     <div class="modal-dialog">
                     <div class="modal-content  text-bg-secondary">
                 
@@ -64,7 +79,7 @@
                 </div>
             </span>
             <span class="col-4 text-end">
-                <a class="btn btn-outline-primary" href="{{url()->previous()}}"><i class="bi-arrow-90deg-left"></i></a>
+                <a class="btn btn-outline-primary" href="{{url('/home')}}"><i class="bi-arrow-90deg-left"></i></a>
             </span>
         </div>
         <hr>
@@ -77,8 +92,9 @@
         <hr>
         <div class="container-fluid">
             <div class="pb-4">
+                @if(NULL != $comments)
                 <span class="d-flex"><h5>Penilaian : {{__( intval($comments->avg('rating')).'/5' )}}</h5>&nbsp;({{$comments->count()}} komentar)</span>
-                @if($comments->count() > 0)
+               
                 
                 <div class="card">
                     <div class="card-header">
@@ -90,45 +106,12 @@
                     <div class="card-body">
                         
                         <div class="row px-2">
-                            @if(NULL != $comments->media1 )
-                            <img src="{{$comments->media1}}" class="col-4 img-fluid object-fit-cover landscape" data-bs-toggle="modal" data-bs-target="{{__('#media1Modal'.$comments->user->id)}}">
-                                <!-- Modal for media1 -->
-                                <div class="modal" id="{{__('media1Modal'.$comments->user->id)}}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <img src="{{$comments->media1}}" class="img-fluid">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if (NULL != $comments->media2 )
-                            <img src="{{$comments->media2}}" class="col-4 img-fluid object-fit-cover landscape" data-bs-toggle="modal" data-bs-target="{{__('#media2Modal'.$comments->user->id)}}">
-                                <!-- Modal for media2 -->
-                                <div class="modal  " id="{{__('media2Modal'.$comments->user->id)}}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <img src="{{$comments->media2}}" class="img-fluid">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            @if (NULL != $comments->media3 )
-                            <img src="{{$comments->media3}}" class="col-4 img-fluid object-fit-cover landscape" data-bs-toggle="modal" data-bs-target="{{__('#media3Modal'.$comments->user->id)}}">
-                                <!-- Modal for media3 -->
-                                <div class="modal  " id="{{__('media3Modal'.$comments->user->id)}}" tabindex="-1">
-                                    <div class="modal-dialog">
-                                        <div class="modal-content">
-                                            <div class="modal-body">
-                                                <img src="{{$comments->media3}}" class="img-fluid">
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
+                            @foreach ([$comments->media1, $comments->media2, $comments->media3] as $media)
+                                @if ($media)
+                                    <img src="{{$media}}" class="col-4 img-fluid object-fit-cover ratio-16x9" loading="lazy">
+                                @endif
+                            @endforeach
+
                         </div>
                         
                         <hr>
@@ -147,4 +130,19 @@
             </div>
         </div>
     </div>
+    <script>
+        // JavaScript to open the modal when the link is clicked on page A
+        document.addEventListener("DOMContentLoaded", function() {
+            const openModalLinks = document.querySelectorAll('.open-modal-link');
+            if (openModalLinks) {
+                openModalLinks.forEach(function(link) {
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent the default behavior of the link
+                        const modal = new bootstrap.Modal(document.getElementById('myModal')); // Create a new Modal instance
+                        modal.show(); // Show the modal
+                    });
+                });
+            }
+        });
+    </script>
 @endsection

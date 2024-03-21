@@ -20,6 +20,6 @@ class items_on_cart extends Model
         return $this->belongsTo('App\Models\items');
     }
     public function user(){
-        return $this->belongsTo('App\Models\Users');
+        return $this->belongsTo('App\Models\User');
     }
 }

@@ -3,7 +3,7 @@
     <div class="container">
         <div class="card text-bg-dark">
             <div class="card-header">
-                <h1> Your Balance : {{__(Auth::user()->ewallet)}}</h1>
+                <h1> Your Balance : {{number_format(Auth::user()->ewallet, 0, ',', '.')}} &nbsp;<i class="bi-box"></i></h1>
             </div>
             <div class="row card-body justify-content-center">
                 @foreach($data as $item)

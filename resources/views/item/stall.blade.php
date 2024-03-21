@@ -10,6 +10,7 @@
             {{ session('gagal') }}
         </div>
     @endif
+    @if($pending_items->count() > 0)<div class="alert alert-warning text-center">anda mempunyai permintaan pengiriman yang tertunda &nbsp;<a href="{{url('pending/'.Auth::user()->id)}}">Lihat Disini</a></div>@endif
     <div class="card text-bg-dark">
         <div class="card-header d-flex justify-content-between">
             {{__(Route::current()->getName())}}

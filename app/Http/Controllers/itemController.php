@@ -8,6 +8,7 @@ use App\Models\items;
 use App\Models\category;
 use App\Models\items_on_cart;
 use App\Models\comment;
+use App\Models\shipped_item;
 use Auth;
 class itemController extends Controller
 {
@@ -18,8 +19,17 @@ class itemController extends Controller
 
     public function stall($id){
         $user = User::findOrFail($id);
-        $current_items = items::where('user_id',$user->id)->get();
-        return view('item.stall')->withuser($user)->with('current_items',$current_items);
+        $current_items = items::where('user_id', $user->id)->get();
+        //kodingan baru : perlu diingat
+        //panggil collect untuk membuat wadah collection kosong
+        $pending_items = collect();
+        //panggil setiap id milik barang user lalu store ke collection kosong
+        foreach ($current_items as $item) {
+            $pending = shipped_item::where('item_id', $item->id)->get();
+            $pending_items = $pending_items->merge($pending);
+        }
+        // dd($pending_items);
+        return view('item.stall')->withuser($user)->with('current_items',$current_items)->with('pending_items',$pending_items);
     }   
 
     public function create_stall(){
@@ -128,36 +138,65 @@ class itemController extends Controller
         }
         return redirect(url()->previous())->withsukses('item berhasil dihapus');
     }
+
     public function cart($id){
         $items = items::all();
         $user = User::findOrFail($id);
         $current_items = items_on_cart::where('user_id',$user->id)->get();
         return view('item.cart')->withuser($user)->with('current_items',$current_items)->with('items',$items);
     }
+
     public function addCart(Request $request, $item){
         $current = items::findOrFail($item);
+        $old = items_on_cart::where('item_id', $current->id)
+                    ->where('user_id', Auth::user()->id)
+                    ->first();
+        // dd($old);
         $request->validate([
-            'item_count' => 'required|numeric|max:'.$current->item_count,
+            'item_count' => 'required|numeric|min:1|max:'.$current->item_count,
         ]);
         try {
-            $cart = new items_on_cart();
-            $cart->user_id = Auth::user()->id;
-            $cart->item_id = $current->id;
-            $cart->item_count = $request->input('item_count');
-            $cart->save();
+            // add existing item to cart by updating the values
+            if(NULL != $old){
+                $new_count = $old->item_count +  $request->input('item_count');
+                // check if it's not exceed the items stock
+                if($new_count <= $current->item_count){
+                    $old->update([
+                        'item_count'=> $new_count
+                    ]);
+                }else{
+                    // dd('hello');
+                    return redirect('/item/'.$current->id)->withgagal('jumlah barang tidak bisa melebihi stok');
+                }
+                
+            }else{
+                $cart = new items_on_cart();
+                $cart->user_id = Auth::user()->id;
+                $cart->item_id = $current->id;
+                $cart->item_count = $request->input('item_count');
+                $cart->save();
+            }
+            
         } catch (\Throwable $th) {
-            return redirect('/')->withstatus('Galat saat menambahkan item, item mungkin sudah ada di keranjang');
+            return redirect('/')->withgagal('Galat saat menambahkan item, item mungkin sudah ada di keranjang');
         }
-        return redirect('/item/'.$current->id)->withstatus('Berhasil ditambah');
+        return redirect('/item/'.$current->id)->withsukses('Berhasil ditambah');
     }
+
+    public function cart_delete(Request $request, $cart){
+        $user = Auth::user();
+        $cart = items_on_cart::findOrFail($cart);
+        $cart->delete();
+        return redirect('cart/'.$user->id)->withsukses('Berhasil Dihapus');
+    }
+
     public function detail($item){
         $items = items::findOrFail($item);
         $comments = comment::where('item_id',$item)->first();
+        
         return view('item.detail')->with('item',$items)->withcomments($comments);
     }
-    public function checkout(Request $request, $item){
-
-    }
+   
     public function category($cat){
         $category = category::all();
         $item = items::where('category_id',$cat)->get();
@@ -165,4 +204,22 @@ class itemController extends Controller
         return view('item.category')->with('item',$item)->with('category',$category);
     }
 
+    public function shipment($id){
+        $ship = shipped_item::where('user_id',Auth::user()->id)->get();
+        return view('item.ship')->with('ship',$ship);
+    }
+    public function pending($id){
+        $current_items = items::where('user_id', Auth::user()->id)->get();
+        $pending_items = collect();
+        foreach ($current_items as $item) {
+            $pending = shipped_item::where('item_id', $item->id)->get();
+            $pending_items = $pending_items->merge($pending);
+        }
+        return view('item.pending')->with('pending_items',$pending_items);
+        
+    }
+    public function accept_shipment(Request $request, $id){
+        $ship = shipped_item::where('user_id',Auth::user()->id)->get();
+        return view('item.ship')->with('ship',$ship);
+    }
 }

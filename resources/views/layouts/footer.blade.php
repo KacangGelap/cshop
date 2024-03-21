@@ -13,6 +13,9 @@
         </div>
         <div class="col-md-3">
             <h6 class="border-bottom">Useful Links</h6>
+            <a href="{{route('who made this')}}" class="text-white">{{__('Privacy Policy')}}</a>
+            <br>
+            <a href="{{route('who made this')}}" class="text-white">{{__('FAQ')}}</a>
         </div>
         <div class="col-md-3">
             <h6 class="border-bottom">Contact</h6>

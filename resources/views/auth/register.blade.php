@@ -64,7 +64,33 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="row mb-3" id="alamat">
+                            <label for="alamat" class="col-md-4 col-form-label text-md-end">{{ __('Alamat') }}</label>
 
+                            <div class="col-md-6">
+                                <input id="alamat" type="text" class="form-control @error('alamat') is-invalid @enderror" name="alamat" value="{{ old('alamat') }}" autocomplete="alamat" autofocus>
+
+                                @error('alamat')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label for="no_hp" class="col-md-4 col-form-label text-md-end">{{ __('No. HP') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="no_hp" type="text" class="form-control @error('no_hp') is-invalid @enderror" name="no_hp" value="{{ old('no_hp') }}" required autocomplete="no_hp" autofocus placeholder="Contoh : 081234567890">
+
+                                @error('no_hp')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="row mb-3">
                             <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
 
@@ -109,6 +135,7 @@
         } else if (role === 'courier') {
             document.getElementById('form').style.display = 'block';
             document.getElementById('role_selector').style.display = 'none';
+            document.getElementById('alamat').style.display = 'none';
             document.getElementById('roles').value = 'courier';
         }
     }
