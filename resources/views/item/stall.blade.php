@@ -22,7 +22,7 @@
            
             @if (NULL != $current_items->first())
                 @foreach($current_items as $item)
-                <div class="card col-3 px-0 border-dark border-4">
+                <div class="card col-md-3 px-0 border-dark border-4">
                     <div class="card-header" style="background-image: url({{$item->foto1}});height:200px;background-size:cover;background-position:center" placeholder="{{$item->description}}">
                         @if($item->status == 'Tersedia')<button class="btn btn-primary" disabled>{{$item->status}}</button>@else<button class="btn btn-light text-muted" disabled>{{$item->status}}</button> @endif
                     </div>

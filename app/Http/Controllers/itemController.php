@@ -9,6 +9,7 @@ use App\Models\category;
 use App\Models\items_on_cart;
 use App\Models\comment;
 use App\Models\shipped_item;
+use App\Models\track;
 use Auth;
 class itemController extends Controller
 {
@@ -139,6 +140,10 @@ class itemController extends Controller
         return redirect(url()->previous())->withsukses('item berhasil dihapus');
     }
 
+
+    //sebagai pembeli
+
+
     public function cart($id){
         $items = items::all();
         $user = User::findOrFail($id);
@@ -206,20 +211,96 @@ class itemController extends Controller
 
     public function shipment($id){
         $ship = shipped_item::where('user_id',Auth::user()->id)->get();
+        // dd($ship->track->last());
         return view('item.ship')->with('ship',$ship);
     }
+    public function track_shipment($id, $item){
+        $track = track::where('shipped_item_id',$item)->get();
+        dd($track->last()->status);
+        
+    }
+
+    public function shipment_remove($id,$item){
+        $ship = shipped_item::findOrFail($item);
+        // dd($ship);
+        if ($ship->status == 'menunggu penjual' || $ship->status == 'diproses penjual' || $ship->status == 'menunggu kurir' ) {
+            $ship->update([
+                'status'=>'transaksi gagal'
+            ]);
+            $track = new track();
+            $track->shipped_item_id = $ship->id;
+            $track->status = 'transaksi dibatalkan oleh pembeli';
+            $track->save();
+    
+            Auth::user()->update([
+                'ewallet'=> Auth::user()->ewallet + $ship->total_price
+            ]);
+            return redirect('shipment/'.Auth::user()->id)->withsukses('pesanan berhasil dibatalkan');
+        }
+        else{
+            return redirect('shipment/'.Auth::user()->id)->withgagal('gagal membatalkan pesanan');
+        }
+        
+    }
+
+    public function shipment_complete($id,$item){
+        $ship = shipped_item::findOrFail($item);
+        dd($ship->item->user->name);
+        $ship->update([
+            'status'=>'diterima pembeli'
+        ]);
+        Auth::user()->update([
+            'ewallet'=> Auth::user()->ewallet + $ship->total_price
+        ]);
+        return redirect('shipment/'.Auth::user()->id)->withsukses('pesanan diterima! mohon beri penilaian pada barang');
+    }
+
+
+    // sebagai penjual
+
+
     public function pending($id){
         $current_items = items::where('user_id', Auth::user()->id)->get();
+        // dd(Auth::user()->item->get()->ship->count());
+        //kodingan baru, perlu diingat
         $pending_items = collect();
         foreach ($current_items as $item) {
             $pending = shipped_item::where('item_id', $item->id)->get();
             $pending_items = $pending_items->merge($pending);
         }
         return view('item.pending')->with('pending_items',$pending_items);
-        
+
     }
-    public function accept_shipment(Request $request, $id){
-        $ship = shipped_item::where('user_id',Auth::user()->id)->get();
-        return view('item.ship')->with('ship',$ship);
+    public function shipment_accept($buyer, $item){
+        try {
+            $ship = shipped_item::findOrFail($item);
+            $ship->update([
+                'status'=>'diproses penjual'
+            ]);
+            $track = new track();
+            $track->shipped_item_id = $ship->id;
+            $track->status = 'barang sedang dikemas oleh penjual';
+            $track->save();
+        } 
+        catch (\Throwable $th) {
+            return redirect()->back()->with('gagal','terjadi kesalahan');
+        }
+        return redirect()->back()->with('sukses','status telah diubah');
+    }
+    public function shipment_ready($buyer, $item){
+        try {
+            $ship = shipped_item::findOrFail($item);
+            $ship->update([
+                'status'=>'menunggu kurir'
+            ]);
+            $track = new track();
+            $track->shipped_item_id = $ship->id;
+            $track->status = 'barang telah dikemas, menunggu kurir';
+            $track->save();
+        } 
+        catch (\Throwable $th) {
+            return redirect()->back()->with('gagal','terjadi kesalahan');
+        }
+        return redirect()->back()->with('sukses','status telah diubah');
     }
 }

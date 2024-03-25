@@ -89,6 +89,10 @@ Route::middleware(['auth','checking'])->group(function () {
     Route::get('category/{cat}',[App\Http\Controllers\itemcontroller::class,'category'])->name('Kategori');
     //Shipment & change status
     Route::get('shipment/{id}',[App\Http\Controllers\itemcontroller::class,'shipment'])->name('Pesanan kamu');
+    Route::get('shipment/{id}/track/{item}',[App\Http\Controllers\itemcontroller::class,'track_shipment'])->name('Lacak Status Pesanan');
+    Route::put('shipment/{buyer}/accept/{item}',[App\Http\Controllers\itemcontroller::class,'shipment_accept']);
+    Route::put('shipment/{buyer}/ready/{item}',[App\Http\Controllers\itemcontroller::class,'shipment_ready']);
+    Route::put('shipment/{id}/delete/{item}',[App\Http\Controllers\itemcontroller::class,'shipment_remove']);
     Route::get('pending/{id}',[App\Http\Controllers\itemcontroller::class,'pending'])->name('Menunggu Konfirmasi');
     Route::post('pending/{id}',[App\Http\Controllers\itemcontroller::class,'accept_shipment'])->name('Menunggu Konfirmasi');
 });

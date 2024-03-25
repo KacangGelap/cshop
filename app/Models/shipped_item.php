@@ -23,4 +23,7 @@ class shipped_item extends Model
     public function item(){
         return $this->belongsTo('App\Models\items');
     }
+    public function track(){
+        return $this->hasMany('App\Models\track');
+    }
 }

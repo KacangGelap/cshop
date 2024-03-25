@@ -29,4 +29,7 @@ class items extends Model
     public function comment(){
         return $this->hasMany('App\Models\comment');
     }
+    public function ship(){
+        return $this->hasMany('App\Models\shipped_item', 'item_id', 'id');
+    }
 }

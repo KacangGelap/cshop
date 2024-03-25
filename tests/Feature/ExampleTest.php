@@ -4,15 +4,21 @@ namespace Tests\Feature;
 
 // use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-
+use App\Models\User;
 class ExampleTest extends TestCase
 {
     /**
      * A basic test example.
      */
-    public function test_the_application_returns_a_successful_response(): void
+    //Basic Authentication
+    public function test_authenticated_user_can_access_protected_route()
     {
-        $response = $this->get('/');
+        $user = User::factory()->create([
+            'username' => 'testuser_' . rand(1000, 9999),
+            'role'=>'admin',
+        ]);
+        $this->actingAs($user);
+        $response = $this->get('/home');
 
         $response->assertStatus(200);
     }

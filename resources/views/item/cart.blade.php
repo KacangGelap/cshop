@@ -48,7 +48,7 @@
             <div class="text-light text-center pb-5">Produk yang mungkin anda suka</div>
             @foreach($items as $item)
                     @if($item->user_id != Auth::user()->id )
-                    <div class="card col-3 px-0 border-dark border-4">
+                    <div class="card col-lg-3 px-0 border-dark border-4">
                         <a href="{{url('/item/'.$item->id)}}">
                             <div class="card-header" style="background-image: url({{$item->foto1}});height:200px;background-size:cover;background-position:center" placeholder="{{$item->description}}">
                                 @if($item->status == 'Tersedia')<button class="btn btn-primary" disabled>{{$item->status}}</button>@else<button class="btn btn-light text-muted" disabled>{{$item->status}}</button> @endif

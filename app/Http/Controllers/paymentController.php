@@ -6,8 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\billing;
 use App\Models\payment;
+use App\Models\items;
 use App\Models\items_on_cart;
 use App\Models\shipped_item;
+use App\Models\track;
 use Auth, Hash;
 class paymentController extends Controller
 {
@@ -64,8 +66,9 @@ class paymentController extends Controller
             if(Hash::check($request->input('password'), Auth::user()->password)){
                 $item = items_on_cart::findOrFail($cart);
                 $pay = Auth::user()->ewallet - $request->input('total');
-                $stock = itetms::findOrFail($item->id);
                 // dd($pay);
+                $stock = items::findOrFail($item->item->id);
+                // dd($stock);
                 if($pay >= 0){
                     $ship = new shipped_item();
                     $ship->user_id = Auth::user()->id;
@@ -75,7 +78,12 @@ class paymentController extends Controller
                     $ship->status = 'menunggu penjual';
                     $ship->payment_status = 'True';
                     $ship->save();
-    
+
+                    $track = new track();
+                    $track->shipped_item_id = $ship->id;
+                    $track->status = 'menunggu penjual untuk menyiapkan barang';
+                    $track->save();
+
                     Auth::user()->update([
                         'ewallet' => $pay
                     ]);
@@ -95,7 +103,7 @@ class paymentController extends Controller
             
 
         } catch (\Throwable $th) {
-            return redirect('home')->withstatus('Terjadi Kesalahan');
+            return redirect('home')->withstatus('terjadi kesalahan');
         }
     }
 

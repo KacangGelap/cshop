@@ -22,14 +22,12 @@
 </head>
 <body>
     <div id="app">
-        <main class="pb-4 bg-secondary">
-          <div class="container-fluid">
-            <div class="row flex-nowrap">
-                <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark ">
-                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100  min-vh-100 ">
+        <main class="pb-4 bg-secondary row m-auto">
+                <div class="col-auto col-lg-2 col-xl-2 px-sm-2 px-0 bg-dark">
+                    <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white h-100 min-vh-100 ">
                         <a href="/" class="row d-flex justify-content-center mb-md-0 mx-auto text-primary text-decoration-none border-bottom">
                             
-                            <img src="{{asset('img/favicon.png')}}" class="w-100 justify-content-center">
+                            <img src="{{asset('img/favicon.png')}}" class="w-auto">
                             <p class="text-center">{{config('app.name')}}</p>
                             
                         </a>
@@ -46,11 +44,11 @@
                                 <ul class="collapse {{Route::current()->getName() == 'User Management' ? 'show' : ''}} nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
                                     <li class="w-100">
                                         <a href="{{route('User Management')}}" class="nav-link px-0 align-middle text-primary">
-                                            <span class="ms-3 d-none d-sm-inline "></span>User Management</a>
+                                            <i class="fs-4 bi-user"></i><span class="ms-3 d-none d-sm-inline "></span>User Management</a>
                                     </li>
                                     <li>
                                         <a href="{{url('/item')}}" class="nav-link px-0 align-middle text-primary"> 
-                                            <span class="ms-3 d-none d-sm-inline "></span>Item Management</a>
+                                            <i class="fs-4 bi-user"></i><span class="ms-3 d-none d-sm-inline "></span>Item Management</a>
                                     </li>
                                 </ul>
                             </li>
@@ -63,8 +61,18 @@
                             
                             
                             <li>
+                                @php
+                                    $count = 0;
+                                    $items = Auth::user()->item;
+
+                                    foreach ($items as $item) {
+                                        $count += $item->ship()->where('status','menunggu penjual')->orwhere('status','diproses penjual')->count(); // Count the ships associated with each item
+                                    }
+                                    @endphp
                                 <a href="{{url('/stall/'.Auth::user()->id)}}" class="nav-link px-0 align-middle text-bg-dark">
-                                    <i class="fs-4 bi-shop"></i> <span class="ms-1 d-none d-sm-inline text-bg-dark">Kios Kamu</span> </a>
+                                    <i class="fs-4 bi-shop"></i> <span class="ms-1 d-none d-sm-inline text-bg-dark">Kios Kamu</span>
+                                    @if ($count > 0)<span class="position-absolute translate-middle badge rounded-pill bg-danger">+{{$count}}</span>@endif
+                                </a>
                             </li>
                             @endif
                             
@@ -78,7 +86,7 @@
                         </ul>
                         
                         <div class="dropdown pb-4">
-                            <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                            <a href="#" class="justify-content-center text-white text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                                 <img src="{{Auth::user()->photo != NULL ? Auth::user()->photo : 'https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpluspng.com%2Fimg-png%2Fpng-user-icon-person-icon-png-people-person-user-icon-2240.png&f=1&nofb=1&ipt=31f2d6611ddc01a7ccc8ba193c5630d2bd1ab24b2d5cec443e962b46e01e5485&ipo=images'}}" alt="hugenerd" width="30" height="30" class="rounded-circle">
                                 <span class="d-none d-sm-inline mx-1">{{Str::limit(Auth::user()->name, 13)}}</span>
                             </a>
@@ -103,16 +111,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="col pt-3">
+                <div class="col-lg p-3">
                     @yield('content')
                 </div>
-            </div>
-        </div>
         </main>
+        @extends('layouts.footer')
     </div>
-    <div class="">
-    @extends('layouts.footer')
     
-    </div>
 </body>
 </html>

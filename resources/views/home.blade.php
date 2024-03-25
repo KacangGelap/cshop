@@ -22,21 +22,21 @@
                     {{-- 3 panel --}}
                     <div class="row justify-content-center text-center alert bg-secondary mx-auto">
 
-                        <span class="alert alert-primary mx-2 position-relative col-3">
+                        <span class="alert alert-primary mx-2 position-relative col-md-3">
                             <a href="{{url('/user/'.Auth::user()->id.'/wallet')}}" class="nav-link">
                                 <i class="fs-3 bi-box"></i><p>{{number_format(Auth::user()->ewallet, 0, ',', '.')}}<br>CubeCoins</p>
                             </a>
                             @if (Auth::user()->ewallet < 10000)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">&nbsp;</span>@endif
                         </span>
 
-                        <span class="alert alert-primary mx-2 position-relative col-3">
+                        <span class="alert alert-primary mx-2 position-relative col-md-3">
                             <a href="{{url('/cart/'.Auth::user()->id)}}" class="nav-link">
                                 <i class="fs-3 bi-cart"></i><p>{{$cart->count()}}<br>Items in cart</p>
                             </a>
 
                             @if ($cart->count() > 0)<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">&nbsp;</span>@endif
                         </span>
-                        <span class="alert alert-primary mx-2 position-relative col-3">
+                        <span class="alert alert-primary mx-2 position-relative col-md-3">
                             <a href="{{url('shipment/'.Auth::user()->id)}}" class="nav-link">
                                 <i class="fs-3 bi-truck"></i><p>{{$ship->where('user_id',Auth::user()->id)->count()}}<br>Your Orders</p>
                             </a>
@@ -61,7 +61,7 @@
                     <div class="text-light text-center pb-5">Jelajahi produk lainnya</div>
                     @foreach($item as $item)
                     @if($item->user_id != Auth::user()->id )
-                    <div class="card col-3 px-0 border-dark border-4">
+                    <div class="card col-md-3 px-0 border-dark border-4" loading="lazy">
                         <a href="{{url('/item/'.$item->id)}}">
                         <div class="card-header" style="background-image: url({{$item->foto1}});height:200px;background-size:cover;background-position:center" placeholder="{{$item->description}}">
                             @if($item->status == 'Tersedia')<button class="btn btn-primary" disabled>{{$item->status}}</button>@else<button class="btn btn-light text-muted" disabled>{{$item->status}}</button> @endif

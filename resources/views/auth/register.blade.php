@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-8 min-vh-100">
             <div class="container" id="role_selector">
                 <div class="mb-3 py-5">
                     <label for="role" class="form-label text-primary">Select Role:</label>
