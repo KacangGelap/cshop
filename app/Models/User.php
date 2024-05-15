@@ -26,7 +26,8 @@ class User extends Authenticatable
         'password',
         'ewallet',
         'alamat',
-        'no_hp'
+        'no_hp',
+        'suspension'
     ];
 
     /**

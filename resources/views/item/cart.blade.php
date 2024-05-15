@@ -44,7 +44,7 @@
                 <div class="text-light text-center mb-5">Tidak ada barang nih di Keranjang.</div>
             @endif    
         </div>
-        <div class="card-footer row d-flex justify-content-around">
+        <div class="card-footer row d-flex">
             <div class="text-light text-center pb-5">Produk yang mungkin anda suka</div>
             @foreach($items as $item)
                     @if($item->user_id != Auth::user()->id )

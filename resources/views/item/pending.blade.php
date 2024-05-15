@@ -31,6 +31,7 @@
                             </thead>
                             <tbody class="bg-secondary">
                             @foreach($pending_items as $item)
+                                @if($item->status != 'transaksi gagal' && $item->status != 'sedang dikirim')
                             <tr>
                                 <td>{{$item->id}}</td>
                                 <td>{{$item->created_at}}</td>
@@ -50,9 +51,21 @@
                                         @csrf
                                         <button type="submit" class="btn btn-outline-success w-100">Kirim Pesanan</button>
                                     </form>
+                                    @elseif($item->status == 'dikomplain')
+                                    <form action="{{ url( 'shipment/'.$item->user_id.'/return/'.$item->id ) }}" method="POST" class="p-1">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-success w-100">Terima Pengembalian</button>
+                                    </form>
+                                    <form action="{{ url( 'shipment/'.$item->user_id.'/reject/'.$item->id ) }}" method="POST" class="p-1">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        @csrf
+                                        <button type="submit" class="btn btn-outline-danger w-100">Tolak Pengembalian</button>
+                                    </form>
                                     @endif
                                 </td>
                             </tr>
+                            @endif
                             @endforeach
                         </tbody>
                         </table>

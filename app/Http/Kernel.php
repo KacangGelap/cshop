@@ -58,6 +58,7 @@ class Kernel extends HttpKernel
         'buyer' => \App\Http\Middleware\buyer::class,
         'checking' => \App\Http\Middleware\isolation::class,
         'token' => \App\Http\Middleware\token::class,
+        'ban' => \App\Http\Middleware\suspend::class,
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,

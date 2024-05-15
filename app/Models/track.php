@@ -13,5 +13,9 @@ class track extends Model
     protected $fillable = [
         'shipped_item_id',
         'status',
+        'img'
     ];
+    public function ship(){
+        return $this->belongsTo('App\Models\shipped_item','shipped_item_id','id');
+    }
 }

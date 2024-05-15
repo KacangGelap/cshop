@@ -17,7 +17,23 @@ class itemController extends Controller
         $items = items::all();
         return view('item.index')->withitems($items);
     }
-
+    public function search(Request $request) 
+    {
+        $request->validate([
+            'query'=>'string'
+        ]);
+        try {
+            $items = items::where('item_name', 'like', $request->input('query') . '%')
+            ->orWhere('item_name', 'like', '%' . $request->input('query'))
+            ->orWhere('item_description', 'like', '%' . $request->input('query'))
+            ->orWhere('item_description', 'like', $request->input('query') . '%')
+            ->get();;
+        } catch (\Throwable $th) {
+            $items = items::all();
+            return view('item.index')->with('items',$items);
+        }
+        return view('item.search')->with('items',$items)->withquery($request->input('query'));
+    }
     public function stall($id){
         $user = User::findOrFail($id);
         $current_items = items::where('user_id', $user->id)->get();
@@ -29,8 +45,12 @@ class itemController extends Controller
             $pending = shipped_item::where('item_id', $item->id)->get();
             $pending_items = $pending_items->merge($pending);
         }
+        $count = $pending_items->filter(function ($item) {
+            return $item->status === 'menunggu penjual' || $item->status === 'diproses penjual'|| $item->status === 'dikomplain';
+        })->count();        
+        // dd($count)
         // dd($pending_items);
-        return view('item.stall')->withuser($user)->with('current_items',$current_items)->with('pending_items',$pending_items);
+        return view('item.stall')->withuser($user)->with('current_items',$current_items)->with('counts',$count);
     }   
 
     public function create_stall(){
@@ -150,7 +170,6 @@ class itemController extends Controller
         $current_items = items_on_cart::where('user_id',$user->id)->get();
         return view('item.cart')->withuser($user)->with('current_items',$current_items)->with('items',$items);
     }
-
     public function addCart(Request $request, $item){
         $current = items::findOrFail($item);
         $old = items_on_cart::where('item_id', $current->id)
@@ -187,46 +206,46 @@ class itemController extends Controller
         }
         return redirect('/item/'.$current->id)->withsukses('Berhasil ditambah');
     }
-
     public function cart_delete(Request $request, $cart){
         $user = Auth::user();
         $cart = items_on_cart::findOrFail($cart);
         $cart->delete();
         return redirect('cart/'.$user->id)->withsukses('Berhasil Dihapus');
     }
-
     public function detail($item){
         $items = items::findOrFail($item);
         $comments = comment::where('item_id',$item)->first();
         
         return view('item.detail')->with('item',$items)->withcomments($comments);
     }
-   
     public function category($cat){
         $category = category::all();
         $item = items::where('category_id',$cat)->get();
         
         return view('item.category')->with('item',$item)->with('category',$category);
     }
-
     public function shipment($id){
-        $ship = shipped_item::where('user_id',Auth::user()->id)->get();
+        $ship = shipped_item::where('user_id',Auth::user()->id)->orderBy('status')->get();
         // dd($ship->track->last());
         return view('item.ship')->with('ship',$ship);
     }
     public function track_shipment($id, $item){
         $track = track::where('shipped_item_id',$item)->get();
-        dd($track->last()->status);
-        
+        // dd($track->last()->ship->item->item_name);
+        return view('item.track')->with('track', $track);
     }
-
-    public function shipment_remove($id,$item){
+    public function shipment_remove($id, $item){
         $ship = shipped_item::findOrFail($item);
         // dd($ship);
         if ($ship->status == 'menunggu penjual' || $ship->status == 'diproses penjual' || $ship->status == 'menunggu kurir' ) {
+            // dd($ship);
+            $ship->item->update([
+                'item_count'=>$ship->item->item_count + $ship->item_count,
+            ]);
             $ship->update([
                 'status'=>'transaksi gagal'
             ]);
+            
             $track = new track();
             $track->shipped_item_id = $ship->id;
             $track->status = 'transaksi dibatalkan oleh pembeli';
@@ -242,22 +261,57 @@ class itemController extends Controller
         }
         
     }
-
-    public function shipment_complete($id,$item){
+    public function shipment_complete($id, $item){
         $ship = shipped_item::findOrFail($item);
-        dd($ship->item->user->name);
+        // dd($ship->item->user);
         $ship->update([
             'status'=>'diterima pembeli'
         ]);
-        Auth::user()->update([
-            'ewallet'=> Auth::user()->ewallet + $ship->total_price
+        $ship->item->user->update([
+            'ewallet'=> $ship->item->user->ewallet + $ship->total_price
         ]);
+        $track = new track();
+        $track->shipped_item_id = $ship->id;
+        $track->status = 'telah diterima oleh yang bersangkutan';
+        $track->save();
         return redirect('shipment/'.Auth::user()->id)->withsukses('pesanan diterima! mohon beri penilaian pada barang');
     }
+    public function review($id, $item){
 
+    }
+    public function rate($id, $item){
 
+    }
+    public function shipment_complain($id, $item){
+        $data = shipped_item::findOrFail($item);
+        // dd($data);
+        return view('item.complain')->with('data',$data);
+    }
+    public function request_complain(Request $request, $id, $item){
+        $request->validate([
+            'description' => 'required|string|min:10',
+            'foto' => 'required|image|mimes:jpg,jpeg,png'
+        ]);
+        try {
+            $data = shipped_item::findOrFail($item);
+            // dd($data);
+            
+            $track = new track();
+            $track->shipped_item_id = $data->id;
+            $track->status = 'pembeli mengajukan pengembalian barang, menunggu penjual untuk konfirmasi';
+            $track->img = 'data:image/jpg;charset:utf8;base64,'.base64_encode(file_get_contents($request->file('foto')));
+            $track->save();
+
+            $data->update([
+                'status'=>'dikomplain',
+            ]);
+            return redirect('/shipment/'.Auth::id())->withsukses('berhasil mengajukan pengembalian');
+        } catch (\Throwable $th) {
+            return redirect('/shipment/'.Auth::id())->withgagal('galat saat mengunggah data');
+        }
+    }
+    
     // sebagai penjual
-
 
     public function pending($id){
         $current_items = items::where('user_id', Auth::user()->id)->get();
@@ -265,9 +319,11 @@ class itemController extends Controller
         //kodingan baru, perlu diingat
         $pending_items = collect();
         foreach ($current_items as $item) {
-            $pending = shipped_item::where('item_id', $item->id)->get();
-            $pending_items = $pending_items->merge($pending);
+            $pending = shipped_item::where('item_id', $item->id)->orderBy('status')->get();
+            // dd($pending);
+            $pending_items = $pending_items->merge($pending)->sortByDesc('status');
         }
+
         return view('item.pending')->with('pending_items',$pending_items);
 
     }
@@ -296,6 +352,38 @@ class itemController extends Controller
             $track = new track();
             $track->shipped_item_id = $ship->id;
             $track->status = 'barang telah dikemas, menunggu kurir';
+            $track->save();
+        } 
+        catch (\Throwable $th) {
+            return redirect()->back()->with('gagal','terjadi kesalahan');
+        }
+        return redirect()->back()->with('sukses','status telah diubah');
+    }
+    public function shipment_return($buyer, $item){
+        try {
+            $ship = shipped_item::findOrFail($item);
+            $ship->update([
+                'status'=>'dikirim balik'
+            ]);
+            $track = new track();
+            $track->shipped_item_id = $ship->id;
+            $track->status = 'ajuan pengembalian diterima, menunggu kurir';
+            $track->save();
+        } 
+        catch (\Throwable $th) {
+            return redirect()->back()->with('gagal','terjadi kesalahan');
+        }
+        return redirect()->back()->with('sukses','status telah diubah');
+    }
+    public function reject_return($buyer, $item){
+        try {
+            $ship = shipped_item::findOrFail($item);
+            $ship->update([
+                'status'=>'pesanan diterima'
+            ]);
+            $track = new track();
+            $track->shipped_item_id = $ship->id;
+            $track->status = 'ajuan pengembalian ditolak oleh pembeli';
             $track->save();
         } 
         catch (\Throwable $th) {

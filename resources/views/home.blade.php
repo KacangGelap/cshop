@@ -90,6 +90,52 @@
                     </div>
                 </div>
             </div>
+            @elseif(Auth::user()->role == 'courier')
+            <div class="card text-bg-dark">
+                <div class="card-header">
+                    {{__('Welcome '.Auth::user()->name.'!, silahakan pilih orderan')}}
+                </div>
+                <div class="card-body">
+                    @if($pending->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-striped table-secondary table-hover">
+                            <thead class="bg-secondary">
+                            <tr>
+                                <th>ID pesanan</th>
+                                <th>Tanggal</th>
+                                <th>Alamat [Pembeli]</th>
+                                <th>[Jumlah] Barang</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                            </thead>
+                            <tbody class="bg-secondary">
+                            @foreach($pending as $item)
+                            <tr>
+                                <td>{{$item->id}}</td>
+                                <td>{{$item->created_at}}</td>
+                                <td>{{$item->user->alamat}}<br>[ {{$item->user->name}} ]</td>
+                                <td>[ {{$item->item_count}} ]<br>{{$item->item->item_name}}</td>
+                                <td class="text-danger">{{$item->status}}</td>
+                                <td>
+                                    
+                                    <form action="{{ url( 'courier/accept/'.$item->id ) }}" method="POST" class="p-1">
+                                        <input type="hidden" name="_method" value="PUT">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary w-100">Terima Pesanan</button>
+                                    </form>
+                                    
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                        </table>
+                    </div>
+                    @else
+                    <div class="text-center">Tidak ada barang yang menunggu pengiriman</div>
+                    @endif
+                </div>
+            </div>
             @endif
 
     </div>

@@ -66,9 +66,9 @@
                                     $items = Auth::user()->item;
 
                                     foreach ($items as $item) {
-                                        $count += $item->ship()->where('status','menunggu penjual')->orwhere('status','diproses penjual')->count(); // Count the ships associated with each item
+                                        $count += $item->ship()->where(function($query) {$query->where('status', 'menunggu penjual')->orWhere('status', 'diproses penjual')->orWhere('status', 'dikomplain');})->count(); // Count the ships associated with each item
                                     }
-                                    @endphp
+                                @endphp
                                 <a href="{{url('/stall/'.Auth::user()->id)}}" class="nav-link px-0 align-middle text-bg-dark">
                                     <i class="fs-4 bi-shop"></i> <span class="ms-1 d-none d-sm-inline text-bg-dark">Kios Kamu</span>
                                     @if ($count > 0)<span class="position-absolute translate-middle badge rounded-pill bg-danger">+{{$count}}</span>@endif
@@ -78,8 +78,8 @@
                             
                             @if (Auth::user()->role == 'courier')
                             <li>
-                                <a href="#" class="nav-link px-0 align-middle text-bg-dark">
-                                    <i class="fs-4 bi bi-person"></i> <span class="ms-1 d-none d-sm-inline text-bg-dark">Customers</span> </a>
+                                <a href="{{url('courier/'.Auth::user()->id)}}" class="nav-link px-0 align-middle text-bg-dark">
+                                    <i class="fs-4 bi bi-truck"></i> <span class="ms-1 d-none d-sm-inline text-bg-dark">Orderan</span> </a>
                             </li>
                             @endif
                             <hr>
@@ -91,10 +91,12 @@
                                 <span class="d-none d-sm-inline mx-1">{{Str::limit(Auth::user()->name, 13)}}</span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+                                @if(Auth::user()->role == 'user')
                                 <li class="d-flex justify-content-around">
                                     Wallet: {{ Auth::user()->ewallet >= 1000 ? number_format(Auth::user()->ewallet / 1000, 0) . 'k' : Auth::user()->ewallet }}
                                     <a class="text-dark bg-primary px-1" href="{{url('user/'.Auth::user()->id.'/wallet')}}"><i class="bi bi-plus"></i></a>
                                 </li>
+                                @endif
                                 <li><a class="dropdown-item" href="{{url('profile/'.Auth::user()->id)}}">Profile</a></li>
                                 <li>
                                     <hr class="dropdown-divider">

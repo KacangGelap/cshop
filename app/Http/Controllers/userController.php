@@ -163,4 +163,30 @@ class userController extends Controller
         }
         return redirect(url()->previous())->withsukses('pengguna berhasil dihapus');
     }
+    public function suspend(Request $request, $id) 
+    {
+        $user = User::findOrFail($id);
+        if($user->role == 'admin'){
+            return redirect('/user/')->withgagal('galat saat mengubah data');
+        }else{
+            $user->update([
+                'suspension' => 'True'
+            ]);
+            return redirect('/profile/'.$user->id)->withstatus('data berhasil diubah');
+        }
+            
+    }
+    public function appeal(Request $request, $id) 
+    {
+        $user = User::findOrFail($id);
+        if($user->role == 'admin'){
+            return redirect('/user/')->withgagal('galat saat mengubah data');
+        }else{
+            $user->update([
+                'suspension' => 'False'
+            ]);
+            return redirect('/profile/'.$user->id)->withstatus('data berhasil diubah');
+        }
+            
+    }
 }

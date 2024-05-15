@@ -15,7 +15,8 @@ class shipped_item extends Model
         'item_count',
         'total_price',
         'status',
-        'payment_status'
+        'payment_status',
+        
     ];
     public function user(){
         return $this->belongsTo('App\Models\User');

@@ -24,27 +24,45 @@
               </div>
             @if (NULL != $ship->first())
                 @foreach($ship as $item)
-                <div class="card col-lg-3 px-0 border-dark border-4"  id="@if($item->status == 'menunggu penjual'){{__('a')}}@elseif($item->status == 'diproses penjual' || $item->status == 'menunggu kurir' || $item->status == 'sedang dikirim' || $item->status == 'sampai di tujuan'){{__('b')}}@elseif($item->status == 'diterima pembeli' ||$item->status == 'dikomplain'){{__('c')}}@elseif($item->status == 'dikirim balik' ||$item->status == 'transaksi gagal'){{__('d')}}@endif" style="{{$item->status == 'menunggu penjual' ? 'display:block' : 'display:none'}}">
+                <div class="card col-lg-3 px-0 border-dark border-4"  id="@if($item->status == 'menunggu penjual'){{__('a')}}@elseif($item->status == 'diproses penjual' || $item->status == 'menunggu kurir' || $item->status == 'sedang dikirim' ){{__('b')}}@elseif($item->status == 'diterima pembeli' ||$item->status == 'dikomplain' || $item->status == 'sampai di tujuan'){{__('c')}}@elseif($item->status == 'dikirim balik' ||$item->status == 'transaksi gagal'){{__('d')}}@endif" style="{{$item->status == 'menunggu penjual' ? 'display:block' : 'display:none'}}">
                     <div class="card-header" style="background-image: url({{$item->item->foto1}});height:200px;background-size:cover;background-position:center" placeholder="{{$item->description}}">
-                        @if($item->status == 'menunggu penjual')<button class="btn btn-primary" disabled>
-                        @elseif($item->status == 'diproses penjual' || $item->status == 'menunggu kurir' || $item->status == 'sedang dikirim' || $item->status == 'sampai di tujuan')<button class="btn btn-success" disabled>
-                        @elseif($item->status == 'diterima pembeli' ||$item->status == 'dikomplain')<button class="btn btn-warning" disabled>
-                        @elseif($item->status == 'dikirim balik' ||$item->status == 'transaksi gagal')<button class="btn btn-secondary" disabled>
+                        @if($item->status == 'menunggu penjual')<button class="btn btn-info" disabled>
+                        @elseif($item->status == 'diproses penjual' || $item->status == 'menunggu kurir' )<button class="btn btn-warning" disabled>
+                        @elseif($item->status == 'sedang dikirim' || $item->status == 'sampai di tujuan')<button class="btn btn-success" disabled>
+                        @elseif($item->status == 'diterima pembeli')<button class="btn btn-primary" disabled>
+                        @elseif($item->status == 'dikirim balik' ||$item->status == 'transaksi gagal'||$item->status == 'dikomplain')<button class="btn btn-secondary" disabled>
                         @endif
                         {{$item->status}}</button>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body row">
                         <h4 class="card-title">{{Str::limit($item->item->item_name, 27)}} </h4>
                         <h5>Rp. {{number_format($item->total_price, 0, ',', '.')}}</h5>
                         <p class="text-muted">total unit : {{$item->item_count}}</p>
-                        <span class=""><a href="{{ url( 'shipment/'.Auth::user()->id.'/track/'.$item->id ) }}" class="text-success">{{$item->track->last()->status}}</a></span>
+                        <a href="{{ url( 'shipment/'.Auth::user()->id.'/track/'.$item->id ) }}" class="text-success">{{Str::limit($item->track->last()->status,25)}}</a>
                     </div>
-                    <div class="card-footer row">
+                    <div class="card-footer row mt-auto">
                         @if($item->status == 'menunggu penjual' || $item->status == 'diproses penjual' || $item->status == 'menunggu kurir')
-                        <form action="{{ url( 'shipment/'.Auth::user()->id.'/delete/'.$item->id ) }}" method="POST" class="p-1">
+                        <form action="{{ url( 'shipment/'.Auth::user()->id.'/delete/'.$item->id ) }}" method="POST">
                             <input type="hidden" name="_method" value="PUT">
                             @csrf
                             <button type="submit" class="btn btn-outline-danger w-100">Batalkan Pesanan</button>
+                        </form>
+                        @elseif($item->status == 'sampai di tujuan')
+                        <form action="{{ url( 'shipment/'.Auth::user()->id.'/complain/'.$item->id ) }}" method="GET" class=" col-md-6">
+                            
+                            @csrf
+                            <button type="submit" class="btn btn-outline-danger w-100">Komplain</button>
+                        </form>
+                        <form action="{{ url( 'shipment/'.Auth::user()->id.'/done/'.$item->id ) }}" method="POST" class="col-md-6">
+                            <input type="hidden" name="_method" value="PUT">
+                            @csrf
+                            <button type="submit" class="btn btn-primary w-100">Terima</button>
+                        </form>
+                        @elseif($item->status == 'diterima pembeli')
+                        <form action="{{ url( 'shipment/'.Auth::user()->id.'/rate/'.$item->id ) }}" method="POST" >
+                            
+                            @csrf
+                            <button type="submit" class="btn btn-warning w-100">Beri Penilaian</button>
                         </form>
                         @endif
                     </div>               
