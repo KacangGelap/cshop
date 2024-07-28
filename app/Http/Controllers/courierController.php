@@ -81,7 +81,7 @@ class courierController extends Controller
         $track->save();
         return redirect('courier/'.Auth::id())->with('sukses','Data berhasil diubah');
     }
-    public function fail(Request $request, $item){
+    public function fail    (Request $request, $item){
         try {
             $ship = shipped_item::findOrFail($item);
             $ship->update([
